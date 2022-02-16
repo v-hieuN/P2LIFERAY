@@ -1,10 +1,3 @@
-<%@ page import="com.liferay.portal.kernel.util.ParamUtil" %><%--
-  Created by IntelliJ IDEA.
-  User: hieunv
-  Date: 2/16/2022
-  Time: 2:01 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@include file="../init.jsp"%>
 
 <%
@@ -15,22 +8,42 @@
 
 <liferay-ui:icon-menu>
 
-    <portlet:renderURL var="editURL">
-        <portlet:param name="entryId"
-                       value="<%= String.valueOf(entry.getEntryId()) %>" />
-        <portlet:param name="mvcPath" value="/guestbook/edit_entry.jsp" />
-    </portlet:renderURL>
+    <c:if
+            test="<%= GuestbookEntryPermission.contains(permissionChecker, entry.getEntryId(), ActionKeys.UPDATE) %>">
+        <portlet:renderURL var="editURL">
+            <portlet:param name="entryId"
+                           value="<%= String.valueOf(entry.getEntryId()) %>" />
+            <portlet:param name="mvcPath" value="/guestbook/edit_entry.jsp" />
+        </portlet:renderURL>
 
-    <liferay-ui:icon image="edit" message="Edit"
-                     url="<%=editURL.toString() %>" />
+        <liferay-ui:icon image="edit" message="Edit"
+                         url="<%=editURL.toString() %>" />
+    </c:if>
 
-    <portlet:actionURL name="deleteEntry" var="deleteURL">
-        <portlet:param name="entryId"
-                       value="<%= String.valueOf(entry.getEntryId()) %>" />
-        <portlet:param name="guestbookId"
-                       value="<%= String.valueOf(entry.getGuestbookId()) %>" />
-    </portlet:actionURL>
+    <c:if
+            test="<%=GuestbookEntryPermission.contains(permissionChecker, entry.getEntryId(), ActionKeys.PERMISSIONS) %>">
 
-    <liferay-ui:icon-delete url="<%=deleteURL.toString() %>" />
+        <liferay-security:permissionsURL
+                modelResource="<%= GuestbookEntry.class.getName() %>"
+                modelResourceDescription="<%= entry.getMessage() %>"
+                resourcePrimKey="<%= String.valueOf(entry.getEntryId()) %>"
+                var="permissionsURL" />
+
+        <liferay-ui:icon image="permissions" url="<%= permissionsURL %>" />
+
+    </c:if>
+
+    <c:if
+            test="<%=GuestbookEntryPermission.contains(permissionChecker, entry.getEntryId(), ActionKeys.DELETE) %>">
+
+        <portlet:actionURL name="deleteEntry" var="deleteURL">
+            <portlet:param name="entryId"
+                           value="<%= String.valueOf(entry.getEntryId()) %>" />
+            <portlet:param name="guestbookId"
+                           value="<%= String.valueOf(entry.getGuestbookId()) %>" />
+        </portlet:actionURL>
+
+        <liferay-ui:icon-delete url="<%=deleteURL.toString() %>" />
+    </c:if>
 
 </liferay-ui:icon-menu>

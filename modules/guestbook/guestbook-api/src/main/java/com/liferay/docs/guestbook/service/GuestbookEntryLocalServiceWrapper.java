@@ -94,10 +94,12 @@ public class GuestbookEntryLocalServiceWrapper
 	 *
 	 * @param guestbookEntry the guestbook entry
 	 * @return the guestbook entry that was removed
+	 * @throws PortalException
 	 */
 	@Override
 	public com.liferay.docs.guestbook.model.GuestbookEntry deleteGuestbookEntry(
-		com.liferay.docs.guestbook.model.GuestbookEntry guestbookEntry) {
+			com.liferay.docs.guestbook.model.GuestbookEntry guestbookEntry)
+		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _guestbookEntryLocalService.deleteGuestbookEntry(guestbookEntry);
 	}

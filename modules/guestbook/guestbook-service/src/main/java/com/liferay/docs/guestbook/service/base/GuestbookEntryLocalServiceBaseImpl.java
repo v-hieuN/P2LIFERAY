@@ -148,10 +148,13 @@ public abstract class GuestbookEntryLocalServiceBaseImpl
 	 *
 	 * @param guestbookEntry the guestbook entry
 	 * @return the guestbook entry that was removed
+	 * @throws PortalException
 	 */
 	@Indexable(type = IndexableType.DELETE)
 	@Override
-	public GuestbookEntry deleteGuestbookEntry(GuestbookEntry guestbookEntry) {
+	public GuestbookEntry deleteGuestbookEntry(GuestbookEntry guestbookEntry)
+		throws PortalException {
+
 		return guestbookEntryPersistence.remove(guestbookEntry);
 	}
 

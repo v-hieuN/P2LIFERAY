@@ -3,14 +3,10 @@ package com.liferay.docs.guestbook.portlet.portlet;
 import com.liferay.docs.guestbook.model.Guestbook;
 import com.liferay.docs.guestbook.model.GuestbookEntry;
 import com.liferay.docs.guestbook.portlet.constants.GuestbookPortletKeys;
-
 import com.liferay.docs.guestbook.service.GuestbookEntryLocalService;
 import com.liferay.docs.guestbook.service.GuestbookLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
-
-import javax.portlet.*;
-
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.servlet.SessionErrors;
@@ -20,6 +16,7 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import javax.portlet.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -51,40 +48,7 @@ public class GuestbookWebPortlet extends MVCPortlet {
 	@Reference
 	private GuestbookLocalService _guestbookLocalService;
 
-	@Override
-	public void render(RenderRequest renderRequest, RenderResponse renderResponse)
-			throws IOException, PortletException {
 
-		try {
-			ServiceContext serviceContext = ServiceContextFactory.getInstance(
-					Guestbook.class.getName(), renderRequest);
-
-			long groupId = serviceContext.getScopeGroupId();
-
-			long guestbookId = ParamUtil.getLong(renderRequest, "guestbookId");
-
-			List<Guestbook> guestbooks = _guestbookLocalService.getGuestbooks(
-					groupId);
-
-			if (guestbooks.isEmpty()) {
-				Guestbook guestbook = _guestbookLocalService.addGuestbook(
-						serviceContext.getUserId(), "Main", serviceContext);
-
-				guestbookId = guestbook.getGuestbookId();
-			}
-
-			if (guestbookId == 0) {
-				guestbookId = guestbooks.get(0).getGuestbookId();
-			}
-
-			renderRequest.setAttribute("guestbookId", guestbookId);
-		}
-		catch (Exception e) {
-			throw new PortletException(e);
-		}
-
-		super.render(renderRequest, renderResponse);
-	}
 
 	public void addEntry(ActionRequest request, ActionResponse response)
 			throws PortalException {
@@ -164,5 +128,40 @@ public class GuestbookWebPortlet extends MVCPortlet {
 					Level.SEVERE, null, e);
 			SessionErrors.add(request, e.getClass().getName());
 		}
+	}
+
+	@Override
+	public void render(RenderRequest renderRequest, RenderResponse renderResponse)
+			throws IOException, PortletException {
+
+		try {
+			ServiceContext serviceContext = ServiceContextFactory.getInstance(
+					Guestbook.class.getName(), renderRequest);
+
+			long groupId = serviceContext.getScopeGroupId();
+
+			long guestbookId = ParamUtil.getLong(renderRequest, "guestbookId");
+
+			List<Guestbook> guestbooks = _guestbookLocalService.getGuestbooks(
+					groupId);
+
+			if (guestbooks.isEmpty()) {
+				Guestbook guestbook = _guestbookLocalService.addGuestbook(
+						serviceContext.getUserId(), "Main", serviceContext);
+
+				guestbookId = guestbook.getGuestbookId();
+			}
+
+			if (guestbookId == 0) {
+				guestbookId = guestbooks.get(0).getGuestbookId();
+			}
+
+			renderRequest.setAttribute("guestbookId", guestbookId);
+		}
+		catch (Exception e) {
+			throw new PortletException(e);
+		}
+
+		super.render(renderRequest, renderResponse);
 	}
 }
