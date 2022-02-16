@@ -2,7 +2,7 @@ package com.liferay.docs.guestbook.portlet.portlet;
 
 import com.liferay.docs.guestbook.model.Guestbook;
 import com.liferay.docs.guestbook.model.GuestbookEntry;
-import com.liferay.docs.guestbook.portlet.constants.GuestbookWebPortletKeys;
+import com.liferay.docs.guestbook.portlet.constants.GuestbookPortletKeys;
 
 import com.liferay.docs.guestbook.service.GuestbookEntryLocalService;
 import com.liferay.docs.guestbook.service.GuestbookLocalService;
@@ -13,6 +13,8 @@ import javax.portlet.*;
 
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import org.osgi.service.component.annotations.Component;
@@ -35,7 +37,7 @@ import java.util.logging.Logger;
 		"javax.portlet.display-name=GuestbookWeb",
 		"javax.portlet.init-param.template-path=/",
 		"javax.portlet.init-param.view-template=/guestbook/view.jsp",
-		"javax.portlet.name=" + GuestbookWebPortletKeys.GUESTBOOK,
+		"javax.portlet.name=" + GuestbookPortletKeys.GUESTBOOK,
 		"javax.portlet.resource-bundle=content.Language",
 		"javax.portlet.security-role-ref=power-user,user"
 	},
@@ -109,7 +111,7 @@ public class GuestbookWebPortlet extends MVCPortlet {
 
 			}
 			catch (Exception e) {
-				System.out.println(e);
+				SessionErrors.add(request, e.getClass().getName());
 
 				PortalUtil.copyRequestParameters(request, response);
 
@@ -127,10 +129,12 @@ public class GuestbookWebPortlet extends MVCPortlet {
 
 				response.setRenderParameter(
 						"guestbookId", Long.toString(guestbookId));
+				SessionMessages.add(request, "entryAdded");
+
 
 			}
 			catch (Exception e) {
-				System.out.println(e);
+				SessionMessages.add(request, "entryAdded");
 
 				PortalUtil.copyRequestParameters(request, response);
 
@@ -152,11 +156,13 @@ public class GuestbookWebPortlet extends MVCPortlet {
 					"guestbookId", Long.toString(guestbookId));
 
 			_guestbookEntryLocalService.deleteGuestbookEntry(entryId);
+			SessionMessages.add(request, "entryDeleted");
 		}
 
 		catch (Exception e) {
 			Logger.getLogger(GuestbookWebPortlet.class.getName()).log(
 					Level.SEVERE, null, e);
+			SessionErrors.add(request, e.getClass().getName());
 		}
 	}
 }
